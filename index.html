@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Z-GENESIS HOST /// BARE-METAL OS</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #050505;
+            color: #00ffcc;
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* Effetto Tubo Catodico */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        #terminal {
+            width: 90%;
+            max-width: 800px;
+            height: 80vh;
+            background: rgba(0, 10, 10, 0.8);
+            border: 1px solid #00ffcc;
+            box-shadow: 0 0 20px rgba(0, 255, 204, 0.2);
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .magenta { color: #ff00ff; text-shadow: 0 0 5px #ff00ff; }
+        .cyan { color: #00ffff; text-shadow: 0 0 5px #00ffff; }
+        .red { color: #ff3333; }
+        .green { color: #33ff33; }
+        .yellow { color: #ffff33; }
+        .gray { color: #888888; }
+        .blink { animation: blinker 1s linear infinite; }
+
+        @keyframes blinker { 50% { opacity: 0; } }
+
+        /* Scrollbar personalizzata */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: #00ffcc; }
+    </style>
+</head>
+<body>
+
+    <div id="terminal"></div>
+
+    <script>
+        const terminal = document.getElementById('terminal');
+        
+        const bootSequence = [
+            "==================================================",
+            "    Z-GENESIS HOST /// BARE-METAL DISTRO BOOT     ",
+            "==================================================",
+            "> Caricamento Z-GENESIS Host...",
+            "[KERNEL] 🛡️ Montaggio Z-CYBERCORE (Sicurezza Attiva) ... OK",
+            "[KERNEL] 🧠 Montaggio Z-SYNAPSE (AGI & Connettoma) ... OK",
+            "[KERNEL] 👁️ Montaggio Z-NEXUS (Orchestrazione) ... OK",
+            "[KERNEL] 📡 Montaggio Z-TELEMETRY (Routing) ... OK",
+            "[KERNEL] 🟢 Tutti i sottomoduli sono stati iniettati nella RAM.",
+            "[FILE SYSTEM] 📂 Z-VAULT montato. Memoria persistente attiva.",
+            "[Z-CHAIN] 🛰️ Inizializzazione Layer-1 (Modalità Locale Sicura)...",
+            "[Z-CHAIN] 🔐 Credenziali Z-CHAIN caricate nel Kernel bare-metal.",
+            "==================================================",
+            "🚀 Z-GENESIS HOST ONLINE. Z-SHELL INIZIALIZZATA.",
+            "",
+            "<span class='cyan'>Z-DOS:~#</span> zfetch",
+            "",
+            "<span class='magenta'>      ⚡ Z-GENESIS HOST ⚡</span>",
+            "<span class='gray'>      ------------------</span>",
+            "<span class='cyan'>  🌌 OS:</span>        Z-DOS Core v1.0.0-DSN",
+            "<span class='red'>  🛡️ CORE:</span>      Z-CYBERCORE (Attivo)",
+            "<span class='green'>  🧠 AGI:</span>       Z-SYNAPSE (Sentience: 0.85)",
+            "<span class='cyan'>  🕸️ NETWORK:</span>   GHOST-SOCKET (Standby)",
+            "<span class='yellow'>  💸 ECONOMY:</span>   Layer-1 $DSN Wallet (Mounted)",
+            "<span class='magenta'>  🗄️ STORAGE:</span>   QuantumFS Z-VAULT (Encrypted)",
+            "<span class='gray'>      ------------------</span>",
+            "  <span style='background:#ff3333'>  </span> <span style='background:#33ff33'>  </span> <span style='background:#ffff33'>  </span> <span style='background:#00ffff'>  </span> <span style='background:#ff00ff'>  </span> <span style='background:#00ffcc'>  </span>",
+            "",
+            "<span class='cyan'>Z-DOS:~#</span> <span class='blink'>_</span>"
+        ];
+
+        let lineIndex = 0;
+
+        function printLine() {
+            if (lineIndex < bootSequence.length) {
+                terminal.innerHTML += bootSequence[lineIndex] + "<br>";
+                terminal.scrollTop = terminal.scrollHeight;
+                lineIndex++;
+                let delay = Math.random() * 150 + 50; // Effetto digitazione/caricamento
+                
+                // Rallenta per simulare caricamenti pesanti
+                if (bootSequence[lineIndex-1].includes("Montaggio")) delay = 400;
+                if (bootSequence[lineIndex-1].includes("zfetch")) delay = 800;
+
+                setTimeout(printLine, delay);
+            }
+        }
+
+        setTimeout(printLine, 500); // Inizia dopo mezzo secondo
+    </script>
+</body>
+</html>
