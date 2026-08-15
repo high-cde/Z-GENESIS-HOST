@@ -2,120 +2,108 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Z-GENESIS HOST /// BARE-METAL OS</title>
+    <title>ZDOS Space Command - Prima Z-App</title>
     <style>
-        body {
-            margin: 0;
-            background-color: #050505;
-            color: #00ffcc;
-            font-family: 'Courier New', Courier, monospace;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
+        body { background: #0a0a0a; color: #00ff00; font-family: 'Courier New', monospace; padding: 20px; display: flex; flex-direction: column; height: 100vh; margin: 0; box-sizing: border-box;}
+        h1 { text-transform: uppercase; border-bottom: 1px solid #00ff00; text-align: center; }
+        
+        /* LA TUA UI ZDOS */
+        .dashboard { display: flex; gap: 20px; margin-bottom: 20px; width: 100%; max-width: 1200px; margin-left: auto; margin-right: auto; }
+        .hud-box { flex: 1; background: #111; border: 2px solid #333; padding: 15px; text-align: center; font-size: 20px; font-weight: bold; box-shadow: 0 0 10px #00ff0022;}
+        .hud-value { display: block; font-size: 28px; color: #fff; margin-top: 10px; text-shadow: 0 0 8px #fff; }
+        .red-alert { border-color: #ff0000; box-shadow: 0 0 15px #ff0000; color: #ff0000 !important; }
 
-        /* Effetto Tubo Catodico */
-        body::after {
-            content: "";
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            background-size: 100% 2px, 3px 100%;
-            pointer-events: none;
-            z-index: 10;
-        }
-
-        #terminal {
-            width: 90%;
-            max-width: 800px;
-            height: 80vh;
-            background: rgba(0, 10, 10, 0.8);
-            border: 1px solid #00ffcc;
-            box-shadow: 0 0 20px rgba(0, 255, 204, 0.2);
-            padding: 20px;
-            box-sizing: border-box;
-            overflow-y: auto;
-            white-space: pre-wrap;
-            font-size: 1rem;
-            line-height: 1.5;
-        }
-
-        .magenta { color: #ff00ff; text-shadow: 0 0 5px #ff00ff; }
-        .cyan { color: #00ffff; text-shadow: 0 0 5px #00ffff; }
-        .red { color: #ff3333; }
-        .green { color: #33ff33; }
-        .yellow { color: #ffff33; }
-        .gray { color: #888888; }
-        .blink { animation: blinker 1s linear infinite; }
-
-        @keyframes blinker { 50% { opacity: 0; } }
-
-        /* Scrollbar personalizzata */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #000; }
-        ::-webkit-scrollbar-thumb { background: #00ffcc; }
+        .container { display: flex; width: 100%; max-width: 1200px; gap: 20px; flex-grow: 1; margin: 0 auto; }
+        .panel { flex: 1; display: flex; flex-direction: column; background: #111; border: 1px solid #333; }
+        textarea { flex-grow: 1; background: transparent; color: #00ff00; border: none; padding: 15px; font-family: inherit; font-size: 15px; outline: none; }
+        pre { flex-grow: 1; margin: 0; padding: 15px; overflow-y: auto; color: #00ffff; }
+        button { background: #00ff00; color: #000; border: none; padding: 15px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        button:hover { background: #00cc00; box-shadow: 0 0 15px #00ff00; }
     </style>
 </head>
 <body>
 
-    <div id="terminal"></div>
+    <h1>ZDOS Space Command // Z-App Web Engine</h1>
 
-    <script>
-        const terminal = document.getElementById('terminal');
+    <!-- I TARGET DEL COSTRUTTO [PAINT] -->
+    <div class="dashboard">
+        <div class="hud-box">STATO RETE <span id="ui_stato" class="hud-value">OFFLINE</span></div>
+        <div class="hud-box">NODI ATTIVI <span id="ui_nodi" class="hud-value">0</span></div>
+    </div>
+
+    <div class="container">
+        <div class="panel">
+            <textarea id="codeInput" spellcheck="false">
+[NODE] WebMonitorZDOS {
+    [SIGNAL] nodi_attivati = 12
+    [SIGNAL] stato_rete = "ONLINE - CRIPTATA"
+    [SIGNAL] minaccia_esterna = 0
+
+    [LINK] aggiorna_interfaccia() {
+        [EMIT] "Analisi telemetria in corso..."
         
-        const bootSequence = [
-            "==================================================",
-            "    Z-GENESIS HOST /// BARE-METAL DISTRO BOOT     ",
-            "==================================================",
-            "> Caricamento Z-GENESIS Host...",
-            "[KERNEL] 🛡️ Montaggio Z-CYBERCORE (Sicurezza Attiva) ... OK",
-            "[KERNEL] 🧠 Montaggio Z-SYNAPSE (AGI & Connettoma) ... OK",
-            "[KERNEL] 👁️ Montaggio Z-NEXUS (Orchestrazione) ... OK",
-            "[KERNEL] 📡 Montaggio Z-TELEMETRY (Routing) ... OK",
-            "[KERNEL] 🟢 Tutti i sottomoduli sono stati iniettati nella RAM.",
-            "[FILE SYSTEM] 📂 Z-VAULT montato. Memoria persistente attiva.",
-            "[Z-CHAIN] 🛰️ Inizializzazione Layer-1 (Modalità Locale Sicura)...",
-            "[Z-CHAIN] 🔐 Credenziali Z-CHAIN caricate nel Kernel bare-metal.",
-            "==================================================",
-            "🚀 Z-GENESIS HOST ONLINE. Z-SHELL INIZIALIZZATA.",
-            "",
-            "<span class='cyan'>Z-DOS:~#</span> zfetch",
-            "",
-            "<span class='magenta'>      ⚡ Z-GENESIS HOST ⚡</span>",
-            "<span class='gray'>      ------------------</span>",
-            "<span class='cyan'>  🌌 OS:</span>        Z-DOS Core v1.0.0-DSN",
-            "<span class='red'>  🛡️ CORE:</span>      Z-CYBERCORE (Attivo)",
-            "<span class='green'>  🧠 AGI:</span>       Z-SYNAPSE (Sentience: 0.85)",
-            "<span class='cyan'>  🕸️ NETWORK:</span>   GHOST-SOCKET (Standby)",
-            "<span class='yellow'>  💸 ECONOMY:</span>   Layer-1 $DSN Wallet (Mounted)",
-            "<span class='magenta'>  🗄️ STORAGE:</span>   QuantumFS Z-VAULT (Encrypted)",
-            "<span class='gray'>      ------------------</span>",
-            "  <span style='background:#ff3333'>  </span> <span style='background:#33ff33'>  </span> <span style='background:#ffff33'>  </span> <span style='background:#00ffff'>  </span> <span style='background:#ff00ff'>  </span> <span style='background:#00ffcc'>  </span>",
-            "",
-            "<span class='cyan'>Z-DOS:~#</span> <span class='blink'>_</span>"
-        ];
-
-        let lineIndex = 0;
-
-        function printLine() {
-            if (lineIndex < bootSequence.length) {
-                terminal.innerHTML += bootSequence[lineIndex] + "<br>";
-                terminal.scrollTop = terminal.scrollHeight;
-                lineIndex++;
-                let delay = Math.random() * 150 + 50; // Effetto digitazione/caricamento
-                
-                // Rallenta per simulare caricamenti pesanti
-                if (bootSequence[lineIndex-1].includes("Montaggio")) delay = 400;
-                if (bootSequence[lineIndex-1].includes("zfetch")) delay = 800;
-
-                setTimeout(printLine, delay);
-            }
+        [IF] minaccia_esterna < 1 {
+            [PAINT] "ui_stato" stato_rete
+            [PAINT] "ui_nodi" nodi_attivati
         }
+        
+        [IF] minaccia_esterna > 0 {
+            [PAINT] "ui_stato" "ALLARME ROSSO TATTICO"
+            [PAINT] "ui_nodi" 0
+        }
+        [EMIT] "Interfaccia utente renderizzata dal Silicio."
+    }
+}
+            </textarea>
+            <button id="runBtn">ESEGUI Z-APP</button>
+        </div>
+        <div class="panel">
+            <pre id="outputTerminal">In attesa di connessione Wasm...</pre>
+        </div>
+    </div>
 
-        setTimeout(printLine, 500); // Inizia dopo mezzo secondo
+    <script type="module">
+        import init, { avvia_zlang } from './pkg/zlang_compiler.js';
+
+        async function bootSystem() {
+            await init();
+            const outputTerminal = document.getElementById('outputTerminal');
+            outputTerminal.textContent = "[SYSTEM] Nucleo WebAssembly agganciato.\n";
+
+            document.getElementById('runBtn').addEventListener('click', () => {
+                const code = document.getElementById('codeInput').value;
+                const result = avvia_zlang(code);
+                
+                let visibleLog = ">>> ESECUZIONE Z-LANG IN CORSO...\n\n";
+                const lines = result.split('\n');
+
+                // IL RADAR: Intercetta i costrutti PAINT dal Runtime Rust
+                lines.forEach(line => {
+                    if (line.startsWith("@@PAINT:")) {
+                        const match = line.match(/@@PAINT:(.*?)=(.*)@@/);
+                        if (match) {
+                            const element = document.getElementById(match[1]);
+                            if (element) {
+                                element.textContent = match[2];
+                                // Effetti visivi tattici
+                                if (match[2].includes("ALLARME")) {
+                                    element.parentElement.classList.add("red-alert");
+                                    element.classList.add("red-alert");
+                                } else {
+                                    element.parentElement.classList.remove("red-alert");
+                                    element.classList.remove("red-alert");
+                                }
+                            }
+                        }
+                    } else if (line.trim() !== "") {
+                        visibleLog += line + "\n";
+                    }
+                });
+
+                outputTerminal.textContent = visibleLog;
+            });
+        }
+        bootSystem();
     </script>
 </body>
 </html>
