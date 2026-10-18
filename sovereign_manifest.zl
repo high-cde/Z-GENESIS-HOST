@@ -1,0 +1,5 @@
+// Z-GENESIS-HOST - Sovereign ZDOS Enclave
+module Z-GENESIS-HOST {
+    verify_zero_legacy();
+    connect_dsn_mesh();
+}
